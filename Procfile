@@ -1,1 +1,1 @@
-web: eco app:app
+web: gunicorn app:app
