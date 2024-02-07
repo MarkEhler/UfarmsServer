@@ -1,6 +1,7 @@
 CREATE TABLE PreLaunch (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    Zipcode VARCHAR(5) UNIQUE,
+    Zipcode INT(5),
     Email VARCHAR(55) UNIQUE,
+    Interests VARCHAR(255), # comma seperated
     CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );

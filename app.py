@@ -1,11 +1,21 @@
+from config import Config
 from flask_cors import CORS
 import time
 from flask import Flask
 from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 
 
-app = Flask(__name__, static_folder='react-deploy/build', static_url_path='/')
-CORS(app)
+
+app = Flask(__name__, static_folder='build/', static_url_path='/')
+# app.config.from_object(Config)
+# app.secret_key = Config.SECRET_KEY
+# Create a SQLAlchemy database connection
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"mysql+mysqlconnector://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}/{Config.DB_NAME}"
+    f"?ssl_ca={Config.APP_PATH}/isrgrootx1.pem"
+)CORS(app)
+db = SQLAlchemy(app)
 
 
 # API route
@@ -21,7 +31,7 @@ def index():
         return app.send_static_file('index.html')
     except:
         # If an exception occurs (e.g., connection error or file not found), serve a fallback landing page
-        return send_from_directory('react-flask-deploy/build', '404.html')
+        return send_from_directory('build/', '404.html')
 
 # pseudo-code mock-up findme
 @app.route('api/submit_form', methods=['POST'])
@@ -35,7 +45,7 @@ def submit_form():
         conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO submissions (zipcode, email, produce_type)
+            INSERT INTO submissions (zipcode, email, Interests)
             VALUES (?, ?, ?)
         ''', (zipcode, email, ', '.join(produce_type)))
         conn.commit()

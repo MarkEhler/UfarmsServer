@@ -1,8 +1,7 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
-
-print(basedir)
-print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# print(basedir)
+# print(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 class Config(object):
     # CA_CERT = os.environ.get('CA_CERT')
