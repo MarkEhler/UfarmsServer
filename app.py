@@ -14,7 +14,8 @@ app = Flask(__name__, static_folder='build/', static_url_path='/')
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"mysql+mysqlconnector://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}/{Config.DB_NAME}"
     f"?ssl_ca={Config.APP_PATH}/isrgrootx1.pem"
-)CORS(app)
+    )
+CORS(app)
 db = SQLAlchemy(app)
 
 
