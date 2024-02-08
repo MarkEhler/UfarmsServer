@@ -35,7 +35,7 @@ def index():
         return send_from_directory('build/', '404.html')
 
 # pseudo-code mock-up findme
-@app.route('api/submit_form', methods=['POST'])
+@app.route('/api/submit_form', methods=['POST'])
 def submit_form():
     
     if request.method == 'POST':
