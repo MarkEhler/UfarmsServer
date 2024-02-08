@@ -1,8 +1,7 @@
 from config import Config
 from flask_cors import CORS
 import time
-from flask import Flask
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 
 
