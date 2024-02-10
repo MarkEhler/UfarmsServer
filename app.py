@@ -6,7 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 
-app = Flask(__name__, static_folder='build/', static_url_path='/')
+app = Flask(__name__, static_folder='dist/', static_url_path='/')
 # app.config.from_object(Config)
 # app.secret_key = Config.SECRET_KEY
 # Create a SQLAlchemy database connection
@@ -14,9 +14,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"mysql+mysqlconnector://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}/{Config.DB_NAME}"
     f"?ssl_ca={Config.APP_PATH}/isrgrootx1.pem"
     )
-CORS(app)
+CORS(app, origins="*")  # Allow any origin for development, specify actual origins in production
 db = SQLAlchemy(app)
 
+## Routes
 
 # API route
 @app.route('/api/time')
@@ -30,8 +31,7 @@ def index():
         # Try to serve the React app's index.html
         return app.send_static_file('index.html')
     except:
-        # If an exception occurs (e.g., connection error or file not found), serve a fallback landing page
-        return send_from_directory('build/', '404.html')
+        return send_from_directory('dist/', '404.html')
 
 # pseudo-code mock-up findme
 @app.route('/api/submit_form', methods=['POST'])
@@ -54,6 +54,8 @@ def submit_form():
         return jsonify({'status': 'success'})
     else:
         return jsonify({'status': 'error'})
+
+###
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", threaded=True, port=5000)
