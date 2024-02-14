@@ -9,13 +9,13 @@ from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__, static_folder='dist/', static_url_path='/')
 app.config.from_object(Config)
 app.config['CORS_HEADERS'] = 'Content-Type'
-# app.secret_key = Config.SECRET_KEY
+app.secret_key = Config.SECRET_KEY
 # Create a SQLAlchemy database connection
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"mysql+mysqlconnector://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}/{Config.DB_NAME}"
     f"?ssl_ca={Config.APP_PATH}/isrgrootx1.pem"
     )
-CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow any origin for development, specify actual origins in production
+CORS(app, resources={r"/api/*": {"origins": ""}})  # Allow any origin for development, specify http://beta.ufarms.co/ origins in production
 db = SQLAlchemy(app)
 
 ## Routes
@@ -58,6 +58,12 @@ def submit_form():
     else:
         return jsonify({'status': 'error'})
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+    response.headers.add('Access-Control-Allow-Methods', 'POST')
+    return response
 ###
 
 if __name__ == '__main__':
