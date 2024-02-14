@@ -45,14 +45,20 @@ class Submission(db.Model):
 @app.route('/api/submit_form', methods=['POST'])
 @cross_origin()
 def submit_form():
-    
+
+    if request.method == 'OPTIONS':
+        # Respond to preflight request
+        response = jsonify({'status': 'success'})
+        response.headers.add('Access-Control-Allow-Methods', 'POST')  # Modified line
+        return response
+
     if request.method == 'POST':
         zipcode = request.form.get('zipcode')
         email = request.form.get('email')
         produce_type = request.form.getlist('produceType')
 
         submission = Submission(zipcode=zipcode, email=email, interests=', '.join(produce_type))
-
+        print(produce_type)
         try:
             # Add the Submission object to the database session
             db.session.add(submission)
