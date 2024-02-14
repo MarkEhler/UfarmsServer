@@ -3,7 +3,7 @@ from flask_cors import CORS, cross_origin
 import time
 from flask import Flask, jsonify, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-
+import sqlite3
 
 
 app = Flask(__name__, static_folder='dist/', static_url_path='/')
@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"mysql+mysqlconnector://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}/{Config.DB_NAME}"
     f"?ssl_ca={Config.APP_PATH}/isrgrootx1.pem"
     )
-CORS(app, resources={r"/api/*": {"origins": ""}})  # Allow any origin for development, specify http://beta.ufarms.co/ origins in production
+CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow any origin for development, specify http://beta.ufarms.co/ origins in production
 db = SQLAlchemy(app)
 
 ## Routes
@@ -35,7 +35,14 @@ def index():
     except:
         return send_from_directory('dist/', '404.html')
 
-# pseudo-code mock-up findme
+## Models
+class Submission(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    zipcode = db.Column(db.String(255))
+    email = db.Column(db.String(255))
+    interests = db.Column(db.String(255))
+
+
 @app.route('/api/submit_form', methods=['POST'])
 @cross_origin()
 def submit_form():
@@ -45,16 +52,22 @@ def submit_form():
         email = request.form.get('email')
         produce_type = request.form.getlist('produceType')
 
-        conn = sqlite3.connect(DATABASE)
-        cursor = conn.cursor()
-        cursor.execute('''
-            INSERT INTO submissions (zipcode, email, Interests)
-            VALUES (?, ?, ?)
-        ''', (zipcode, email, ', '.join(produce_type)))
-        conn.commit()
-        conn.close()
+        submission = Submission(zipcode=zipcode, email=email, interests=', '.join(produce_type))
 
-        return jsonify({'status': 'success'})
+        try:
+            # Add the Submission object to the database session
+            db.session.add(submission)
+            # Commit the changes to the database
+            db.session.commit()
+
+            return jsonify({'status': 'success'})
+        except Exception as e:
+            # Handle any exceptions that may occur during the database operation
+            db.session.rollback()
+            return jsonify({'status': 'error', 'message': str(e)})
+        finally:
+            # Close the database session
+            db.session.close()
     else:
         return jsonify({'status': 'error'})
 
