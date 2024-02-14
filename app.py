@@ -3,7 +3,6 @@ from flask_cors import CORS, cross_origin
 import time
 from flask import Flask, jsonify, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-import sqlite3
 
 
 app = Flask(__name__, static_folder='dist/', static_url_path='/')
