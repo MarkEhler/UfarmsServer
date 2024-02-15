@@ -57,7 +57,7 @@ def submit_form():
         zipcode = data.get('zipcode')
         email = data.get('email')
         produce_type = data.get('produceType', [])
-
+        print(email)
         submission = Submission(zipcode=zipcode, email=email, interests=', '.join(produce_type))
         print(produce_type)
         try:
