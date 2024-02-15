@@ -53,9 +53,10 @@ def submit_form():
         return response
 
     if request.method == 'POST':
-        zipcode = request.form.get('zipcode')
-        email = request.form.get('email')
-        produce_type = request.form.getlist('produceType')
+        data = request.get_json()
+        zipcode = data.get('zipcode')
+        email = data.get('email')
+        produce_type = data.get('produceType', [])
 
         submission = Submission(zipcode=zipcode, email=email, interests=', '.join(produce_type))
         print(produce_type)
