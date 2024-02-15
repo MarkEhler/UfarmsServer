@@ -35,11 +35,7 @@ def index():
         return send_from_directory('dist/', '404.html')
 
 ## Models
-class Submission(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    zipcode = db.Column(db.String(255))
-    email = db.Column(db.String(255))
-    interests = db.Column(db.String(255))
+
 
 
 @app.route('/api/submit_form', methods=['POST'])
@@ -58,7 +54,7 @@ def submit_form():
         email = data.get('email')
         produce_type = data.get('produceType', [])
         print(email)
-        submission = Submission(zipcode=zipcode, email=email, interests=', '.join(produce_type))
+        submission = Config.PreLaunch(zipcode=zipcode, email=email, interests=', '.join(produce_type))
         print(produce_type)
         try:
             # Add the Submission object to the database session
