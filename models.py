@@ -12,7 +12,7 @@ from app import bcrypt
 
 class PreLaunch(db.Model):
     """A host farm on the app."""
-
+# todo build out this class to look similar to other classes in this file
     __tablename__ = 'PreLaunch'
     id = db.Column(db.Integer, primary_key=True)
     zipcode = db.Column(db.String(255))
