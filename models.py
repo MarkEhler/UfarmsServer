@@ -11,13 +11,24 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from app import bcrypt
 
 class PreLaunch(db.Model):
-    """A host farm on the app."""
+    """A pre-launch entity on the app."""
 
     __tablename__ = 'PreLaunch'
     id = db.Column(db.Integer, primary_key=True)
     zipcode = db.Column(db.String(255))
     email = db.Column(db.String(255))
     interests = db.Column(db.String(255))
+
+    def __init__(self, *args, **kwargs):
+        super(PreLaunch, self).__init__(*args, **kwargs)
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'zipcode': self.zipcode,
+            'email': self.email,
+            'interests': self.interests
+        }
 
 
 

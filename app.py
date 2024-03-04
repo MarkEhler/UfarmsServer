@@ -3,25 +3,33 @@ from flask_cors import CORS, cross_origin
 import time
 from flask import Flask, jsonify, request, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
-
+import stripe
 
 app = Flask(__name__, static_folder='dist/', static_url_path='/')
 app.config.from_object(Config)
-app.config['CORS_HEADERS'] = 'Content-Type'
+# todo add these to config file
+# stripe.api_key = 'sk_test_....' 
+# endpoint_secret = 'whsec_...'
+
+
 app.secret_key = Config.SECRET_KEY
 # Create a SQLAlchemy database connection
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"mysql+mysqlconnector://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}/{Config.DB_NAME}"
     f"?ssl_ca={Config.APP_PATH}/isrgrootx1.pem"
     )
+
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow any origin for development, specify http://beta.ufarms.co/ origins in production
 db = SQLAlchemy(app)
+
+# findme explore this
+user_info = {}
 
 ## Routes
 
 # API route
+@cross_origin(origin='http://localhost:3000', methods=['POST'], supports_credentials=True)
 @app.route('/api/time')
-@cross_origin()
 def get_current_time():
     return {'time': time.time()}
 
@@ -37,9 +45,8 @@ def index():
 ## Models
 
 
-
+@cross_origin(origin='http://localhost:3000', methods=['POST'], supports_credentials=True)
 @app.route('/api/submit_form', methods=['POST'])
-@cross_origin()
 def submit_form():
 
     if request.method == 'OPTIONS':
@@ -59,9 +66,7 @@ def submit_form():
         try:
             # Add the Submission object to the database session
             db.session.add(submission)
-            # Commit the changes to the database
             db.session.commit()
-
             return jsonify({'status': 'success'})
         except Exception as e:
             # Handle any exceptions that may occur during the database operation
@@ -80,6 +85,59 @@ def submit_form():
 #     response.headers.add('Access-Control-Allow-Methods', 'POST')
 #     return response
 ###
+    
+# Stripe Integration
+# findme todo
+
+@app.route('/pay', methods=['POST'])
+def pay():
+    email = request.json.get('email', None)
+
+    if not email:
+        return 'You need to send an Email!', 400
+
+    intent = stripe.PaymentIntent.create(
+        amount=50000, # unit is in cents
+        currency='usd',
+        receipt_email=email
+    )
+
+    return {"client_secret": intent['client_secret']}, 200
+
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    payload = request.get_data()
+    sig_header = request.headers.get('Stripe_Signature', None)
+
+    if not sig_header:
+        return 'No Signature Header!', 400
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        return 'Invalid payload', 400
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return 'Invalid signature', 400
+
+    if event['type'] == 'payment_intent.succeeded':
+        email = event['data']['object']['receipt_email'] # contains the email that will recive the recipt for the payment (users email usually)
+        
+        user_info['paid_50'] = True
+        user_info['email'] = email
+    else:
+        return 'Unexpected event type', 400
+
+    return '', 200
+
+@app.route('/user', methods=['GET'])
+def user():
+    return user_info, 200
+
+#  END
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", threaded=True, port=5000)
