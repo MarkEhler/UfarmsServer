@@ -11,13 +11,14 @@ app.config.from_object(Config)
 # stripe.api_key = 'sk_test_....' 
 # endpoint_secret = 'whsec_...'
 
-app.config['CORS_HEADERS'] = 'Content-Type'
+
 app.secret_key = Config.SECRET_KEY
 # Create a SQLAlchemy database connection
 app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"mysql+mysqlconnector://{Config.DB_USER}:{Config.DB_PASSWORD}@{Config.DB_HOST}/{Config.DB_NAME}"
     f"?ssl_ca={Config.APP_PATH}/isrgrootx1.pem"
     )
+
 CORS(app, resources={r"/api/*": {"origins": "*"}})  # Allow any origin for development, specify http://beta.ufarms.co/ origins in production
 db = SQLAlchemy(app)
 
@@ -27,8 +28,8 @@ user_info = {}
 ## Routes
 
 # API route
+@cross_origin(origin='http://localhost:3000', methods=['POST'], supports_credentials=True)
 @app.route('/api/time')
-@cross_origin()
 def get_current_time():
     return {'time': time.time()}
 
@@ -44,9 +45,8 @@ def index():
 ## Models
 
 
-
+@cross_origin(origin='http://localhost:3000', methods=['POST'], supports_credentials=True)
 @app.route('/api/submit_form', methods=['POST'])
-@cross_origin()
 def submit_form():
 
     if request.method == 'OPTIONS':
@@ -66,9 +66,7 @@ def submit_form():
         try:
             # Add the Submission object to the database session
             db.session.add(submission)
-            # Commit the changes to the database
             db.session.commit()
-
             return jsonify({'status': 'success'})
         except Exception as e:
             # Handle any exceptions that may occur during the database operation

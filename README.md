@@ -3,7 +3,7 @@
 <h2>Developers</h2>
 
 <ol>
-    Azzumptions Python and python_venv installed
+    Assumptions Python and python_venv installed
     #Activte virtual environment#
     run `python venv venv` in root directory
     (Linux) `source venv/bin/activate` (Windows) (as root) `./venv/scripts/activate` 

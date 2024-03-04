@@ -5,6 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config(object):
     # CA_CERT = os.environ.get('CA_CERT')
+    CORS_HEADERS = 'Content-Type'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAPBOX_TOKEN = os.environ.get('MAPBOX_TOKEN')
