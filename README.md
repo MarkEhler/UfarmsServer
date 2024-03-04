@@ -1,20 +1,20 @@
 <h1> Ufarms Client </h1>
 
 <h2>Developers</h2>
-
+--
 <ol>
-    Assumptions Python and python_venv installed
-    #Activte virtual environment#
-    run `python venv venv` in root directory
-    (Linux) `source venv/bin/activate` (Windows) (as root) `./venv/scripts/activate` 
-    Git clone this repo
-    Change directory to the repo
-    `git checkout -b (name-yourbranch) origin/main`
-    `pip install -r requirements.txt`
-    Copy paste `.flaskenv` file from the note (---Psst email Mark for the .flaskenv file)
-    See that the .crt file exists in your local the path defined in __init__.py(maybe differ for windows and apple users)
-    `flask run` in UfarmsServer directory
-    Observe requests to the server on localhost:5000 in this terminal
+    <li>Assumption -- Python and python_venv installed</li>
+    <li>Activte virtual environment (python venv "virtual-environment")</li>
+    <li>run `python venv venv` in root directory</li>
+    <li>(Linux) `source venv/bin/activate` (Windows) (as root) `./venv/scripts/activate` </li>
+    <li>Git clone this repo
+    Change directory to the repo</li>
+    <li>`git checkout -b (name-yourbranch) origin/main`</li>
+    <li>`pip install -r requirements.txt`</li>
+    <li>Copy paste `.flaskenv` file from the note (---Psst email Mark for the .flaskenv file)</li>
+    <li>See that the .crt file exists in your local the path defined in __init__.py(maybe differ for windows and apple users)</li>
+    <li>`flask run` in UfarmsServer directory</li>
+    <li>Observe requests to the server on localhost:5000 in this terminal</li>
 </ol>
 
 <h2>When Ready to Deploy</h2>
