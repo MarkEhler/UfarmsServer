@@ -1,6 +1,6 @@
 <h1> Ufarms Client </h1>
 
-<h2>Developers</h2>
+## <h2>Developers</h2>
 
 <ol>
     Assumptions Python and python_venv installed
